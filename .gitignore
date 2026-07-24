@@ -1,0 +1,46 @@
+# MongoDB database files and binaries
+/db/
+/mongodb-win32-x86_64-windows-8.2.1/
+
+# Python Virtual Environments
+**/venv/
+**/env/
+**/ENV/
+
+# Python cache & logs
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.log
+Backend/app.log
+Backend/test.log
+Backend/test_log.log
+Backend/test_log.txt
+Backend/yt_test.log
+
+# Node dependencies and build artifacts
+**/node_modules/
+**/dist/
+**/.angular/
+**/.sass-cache/
+**/connect.lock
+**/coverage/
+**/out-tsc/
+**/bazel-out/
+Frontend/package-lock.json
+
+# Secret files
+**/.env
+**/.env.local
+**/.env.*.local
+Backend/.env
+
+# IDE and Editors
+**/.vscode/
+**/.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db

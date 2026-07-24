@@ -1,0 +1,566 @@
+================================================================================
+TESSA AI TEST AUTOMATION - API DOCUMENTATION
+================================================================================
+
+Base URL: http://localhost:8000
+
+================================================================================
+API 1: START EXECUTION
+================================================================================
+
+Endpoint: POST /api/start-execution
+
+Description: Starts a new test execution workflow with images and configurations
+
+Request Body:
+{
+  "image_paths": ["string"],           // List of local image paths (required)
+  "custom_prompt": "string",           // Optional custom instructions
+  "app_description": "string",         // Optional app description
+  "app_name": "string",                // Application name (required)
+  "app_platform": "string",            // Platform: "web" (default), "mobile", etc.
+  "ai_model": "string"                 // AI model: "gemini", "gpt", "openai", "gpt-4"
+}
+
+Response:
+{
+  "execution_id": "string",            // UUID for this execution
+  "status": "string",                  // "started"
+  "message": "string"                  // Success message
+}
+
+Angular Example:
+-----------------
+startExecution(data: StartExecutionRequest): Observable<StartExecutionResponse> {
+  return this.http.post<StartExecutionResponse>(
+    `${this.baseUrl}/api/start-execution`,
+    {
+      image_paths: ["/path/to/image1.png", "/path/to/image2.png"],
+      app_name: "My Test App",
+      app_platform: "web",
+      ai_model: "gemini",
+      custom_prompt: "Focus on login functionality"
+    }
+  );
+}
+
+================================================================================
+API 2: ASK TESSA (CHATBOT)
+================================================================================
+
+Endpoint: POST /api/ask-tessa
+
+Description: Chat with Tessa AI assistant who is aware of execution context
+
+Request Body:
+{
+  "execution_id": "string",            // Execution ID for context (required)
+  "message": "string",                 // User's question (required)
+  "ai_model": "string"                 // AI model: "gemini", "gpt", etc. (required)
+}
+
+Response:
+{
+  "response": "string",                // Tessa's answer
+  "timestamp": "string"                // ISO datetime
+}
+
+Angular Example:
+-----------------
+askTessa(data: AskTessaRequest): Observable<AskTessaResponse> {
+  return this.http.post<AskTessaResponse>(
+    `${this.baseUrl}/api/ask-tessa`,
+    {
+      execution_id: "abc-123-def-456",
+      message: "What was the result of the login test?",
+      ai_model: "gemini"
+    }
+  );
+}
+
+================================================================================
+API 3: EXECUTION HISTORY
+================================================================================
+
+Endpoint: GET /api/execution-history
+
+Description: Retrieve list of all executions with complete details
+
+Query Parameters:
+- limit (optional, default: 50)      // Number of records to return
+- skip (optional, default: 0)        // Number of records to skip (pagination)
+
+Response:
+{
+  "executions": [ExecutionHistoryItem],
+  "total": number
+}
+
+ExecutionHistoryItem Structure:
+{
+  "id": "string",                      // MongoDB _id
+  "execution_id": "string",            // UUID
+  "app_name": "string",
+  "app_description": "string",
+  "app_platform": "string",
+  "ai_model": "string",
+  "custom_prompt": "string",
+  "image_paths": ["string"],           // Array of image paths
+  "script_paths": ["string"],          // Array of generated script paths
+  "summary": "string",                 // Overall execution summary
+  "overall_result": "string",          // "PASSED" | "FAILED"
+  "observation": "string",             // Detailed observations
+  "created_at": "string",              // ISO datetime
+  "status": "string",                  // "pending" | "running" | "completed" | "failed"
+  "test_scenarios": [TestScenario],
+  "execution_results": [ExecutionResult]
+}
+
+TestScenario Structure:
+{
+  "scenario_id": "string",             // e.g., "TC001"
+  "scenario_name": "string",           // e.g., "User Login Flow"
+  "description": "string",
+  "priority": "string",                // "high" | "medium" | "low"
+  "test_steps": [TestStep]
+}
+
+TestStep Structure:
+{
+  "step_number": number,
+  "action": "string",
+  "expected_result": "string"
+}
+
+ExecutionResult Structure:
+{
+  "scenario_id": "string",
+  "scenario_name": "string",
+  "summary": "string",
+  "result": "string",                  // "PASSED" | "FAILED" | "ERROR"
+  "observation": "string",
+  "execution_details": {
+    "success": boolean,
+    "stdout": "string",
+    "stderr": "string",
+    "returncode": number
+  }
+}
+
+Angular Example:
+-----------------
+getExecutionHistory(limit: number = 50, skip: number = 0): Observable<ExecutionHistoryResponse> {
+  return this.http.get<ExecutionHistoryResponse>(
+    `${this.baseUrl}/api/execution-history`,
+    { params: { limit: limit.toString(), skip: skip.toString() } }
+  );
+}
+
+================================================================================
+API 4: RERUN EXECUTION
+================================================================================
+
+Endpoint: POST /api/rerun-execution
+
+Description: Rerun an existing execution with original or updated parameters
+
+Request Body:
+{
+  "execution_id": "string",            // Original execution ID (required)
+  "image_paths": ["string"],           // Optional: new images (uses original if not provided)
+  "custom_prompt": "string",           // Optional: new prompt (uses original if not provided)
+  "app_description": "string",         // Optional: new description
+  "ai_model": "string"                 // Optional: new AI model
+}
+
+Note: Only provide the fields you want to update. Omitted fields will use
+      values from the original execution.
+
+Response:
+{
+  "execution_id": "string",            // New execution ID
+  "status": "string",                  // "started"
+  "message": "string"                  // Success message
+}
+
+Angular Example:
+-----------------
+rerunExecution(data: RerunExecutionRequest): Observable<RerunExecutionResponse> {
+  return this.http.post<RerunExecutionResponse>(
+    `${this.baseUrl}/api/rerun-execution`,
+    {
+      execution_id: "abc-123-def-456",
+      custom_prompt: "Updated test instructions"
+    }
+  );
+}
+
+================================================================================
+WEBSOCKET CONNECTION
+================================================================================
+
+Endpoint: ws://localhost:8000/ws/{execution_id}
+
+Description: Real-time updates for execution progress, logs, and results
+
+Connection:
+------------
+// Angular WebSocket Service
+connectToExecution(executionId: string): WebSocketSubject<any> {
+  return webSocket(`ws://localhost:8000/ws/${executionId}`);
+}
+
+// Usage in component
+this.wsConnection = this.wsService.connectToExecution(executionId);
+this.wsConnection.subscribe(
+  (message) => {
+    console.log('WebSocket message:', message);
+    this.handleWebSocketMessage(message);
+  }
+);
+
+Message Format:
+---------------
+All messages follow this structure:
+{
+  "type": "string",                    // Message type (see below)
+  "execution_id": "string",
+  "data": {},                          // Type-specific data
+  "timestamp": "string"                // ISO datetime
+}
+
+Message Types:
+--------------
+
+1. TYPE: "status"
+   Sent for: Connection status, execution start/complete/fail
+   Data:
+   {
+     "status": "string",               // "connected" | "started" | "completed" | "failed"
+     "message": "string"
+   }
+
+2. TYPE: "progress"
+   Sent for: Stage updates during execution
+   Data:
+   {
+     "stage": "string",                // "testcase_generation" | "code_generation" | "execution"
+     "message": "string",
+     "scenario_id": "string"           // Optional
+   }
+
+3. TYPE: "log"
+   Sent for: Detailed execution logs
+   Data:
+   {
+     "stage": "string",
+     "message": "string",
+     "scenario_id": "string",          // Optional
+     "scenarios": [TestScenario],      // Optional
+     "script_path": "string"           // Optional
+   }
+
+4. TYPE: "result"
+   Sent for: Individual scenario execution results
+   Data:
+   {
+     "stage": "execution",
+     "message": "string",
+     "scenario_id": "string",
+     "result": ExecutionResult
+   }
+
+5. TYPE: "error"
+   Sent for: Execution errors
+   Data:
+   {
+     "status": "failed",
+     "message": "string"
+   }
+
+Heartbeat:
+----------
+Send "ping" to keep connection alive
+Receive "pong" in response
+
+================================================================================
+ADDITIONAL ENDPOINTS
+================================================================================
+
+Root Endpoint:
+--------------
+GET /
+Response: { "name": "string", "version": "string", "status": "string" }
+
+Health Check:
+-------------
+GET /health
+Response: { "status": "healthy" }
+
+================================================================================
+ANGULAR TYPESCRIPT INTERFACES
+================================================================================
+
+// Request Models
+// ---------------
+
+export interface StartExecutionRequest {
+  image_paths: string[];
+  custom_prompt?: string;
+  app_description?: string;
+  app_name: string;
+  app_platform: string;
+  ai_model: string;
+}
+
+export interface AskTessaRequest {
+  execution_id: string;
+  message: string;
+  ai_model: string;
+}
+
+export interface RerunExecutionRequest {
+  execution_id: string;
+  image_paths?: string[];
+  custom_prompt?: string;
+  app_description?: string;
+  ai_model?: string;
+}
+
+// Response Models
+// ---------------
+
+export interface StartExecutionResponse {
+  execution_id: string;
+  status: string;
+  message: string;
+}
+
+export interface AskTessaResponse {
+  response: string;
+  timestamp: string;
+}
+
+export interface RerunExecutionResponse {
+  execution_id: string;
+  status: string;
+  message: string;
+}
+
+export interface ExecutionHistoryResponse {
+  executions: ExecutionHistoryItem[];
+  total: number;
+}
+
+export interface ExecutionHistoryItem {
+  id: string;
+  execution_id: string;
+  app_name: string;
+  app_description?: string;
+  app_platform: string;
+  ai_model: string;
+  custom_prompt?: string;
+  image_paths: string[];
+  script_paths: string[];
+  summary?: string;
+  overall_result?: string;
+  observation?: string;
+  created_at: string;
+  status: string;
+  test_scenarios: TestScenario[];
+  execution_results: ExecutionResult[];
+}
+
+export interface TestScenario {
+  scenario_id: string;
+  scenario_name: string;
+  description: string;
+  priority: string;
+  test_steps: TestStep[];
+}
+
+export interface TestStep {
+  step_number: number;
+  action: string;
+  expected_result: string;
+}
+
+export interface ExecutionResult {
+  scenario_id: string;
+  scenario_name: string;
+  summary: string;
+  result: string;
+  observation: string;
+  execution_details: {
+    success: boolean;
+    stdout: string;
+    stderr: string;
+    returncode: number;
+  };
+}
+
+export interface WebSocketMessage {
+  type: string;
+  execution_id: string;
+  data: any;
+  timestamp: string;
+}
+
+================================================================================
+COMPLETE ANGULAR SERVICE EXAMPLE
+================================================================================
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TessaApiService {
+  private baseUrl = 'http://localhost:8000';
+  private wsUrl = 'ws://localhost:8000';
+
+  constructor(private http: HttpClient) {}
+
+  // API 1: Start Execution
+  startExecution(data: StartExecutionRequest): Observable<StartExecutionResponse> {
+    return this.http.post<StartExecutionResponse>(
+      `${this.baseUrl}/api/start-execution`,
+      data
+    );
+  }
+
+  // API 2: Ask Tessa
+  askTessa(data: AskTessaRequest): Observable<AskTessaResponse> {
+    return this.http.post<AskTessaResponse>(
+      `${this.baseUrl}/api/ask-tessa`,
+      data
+    );
+  }
+
+  // API 3: Get Execution History
+  getExecutionHistory(limit: number = 50, skip: number = 0): Observable<ExecutionHistoryResponse> {
+    return this.http.get<ExecutionHistoryResponse>(
+      `${this.baseUrl}/api/execution-history`,
+      { params: { limit: limit.toString(), skip: skip.toString() } }
+    );
+  }
+
+  // API 4: Rerun Execution
+  rerunExecution(data: RerunExecutionRequest): Observable<RerunExecutionResponse> {
+    return this.http.post<RerunExecutionResponse>(
+      `${this.baseUrl}/api/rerun-execution`,
+      data
+    );
+  }
+
+  // WebSocket Connection
+  connectToExecution(executionId: string): WebSocketSubject<WebSocketMessage> {
+    return webSocket<WebSocketMessage>(
+      `${this.wsUrl}/ws/${executionId}`
+    );
+  }
+
+  // Health Check
+  healthCheck(): Observable<{ status: string }> {
+    return this.http.get<{ status: string }>(`${this.baseUrl}/health`);
+  }
+}
+
+================================================================================
+WORKFLOW SEQUENCE
+================================================================================
+
+1. User starts execution (API 1)
+   -> Receive execution_id in response
+   
+2. Connect to WebSocket with execution_id
+   -> Receive real-time updates
+   
+3. Agent 1: Testcase Generation
+   -> WebSocket sends progress updates
+   -> WebSocket sends generated scenarios
+   
+4. Agent 2: Code Generation (for each scenario)
+   -> WebSocket sends progress for each scenario
+   -> WebSocket sends script paths
+   
+5. Agent 3: Execution (for each scenario)
+   -> WebSocket sends execution progress
+   -> WebSocket sends results for each scenario
+   
+6. Completion
+   -> WebSocket sends final status with summary
+   
+7. Query Tessa (API 2) - Anytime after execution starts
+   -> Get context-aware answers about the execution
+   
+8. View History (API 3)
+   -> List all past executions
+   
+9. Rerun (API 4)
+   -> Use execution_id from history to rerun with modifications
+
+================================================================================
+ERROR HANDLING
+================================================================================
+
+HTTP Status Codes:
+------------------
+200: Success
+404: Execution not found (API 4)
+500: Internal server error
+
+Error Response Format:
+----------------------
+{
+  "detail": "Error message description"
+}
+
+WebSocket Error Handling:
+--------------------------
+- Connection drops: Reconnect with same execution_id
+- Error messages: Type "error" with error details
+- Always check message.type before processing data
+
+================================================================================
+CORS CONFIGURATION
+================================================================================
+
+The backend is configured to accept requests from any origin.
+For production, update CORS settings in app/main.py
+
+Current Configuration:
+- allow_origins: ["*"]
+- allow_credentials: true
+- allow_methods: ["*"]
+- allow_headers: ["*"]
+
+================================================================================
+ENVIRONMENT SETUP
+================================================================================
+
+1. Install dependencies:
+   pip install -r requirements.txt
+
+2. Configure .env file:
+   MONGODB_URL=mongodb://localhost:27017
+   GEMINI_API_KEY=your_key_here
+   OPENAI_API_KEY=your_key_here
+
+3. Start MongoDB:
+   Ensure MongoDB is running on localhost:27017
+
+4. Run application:
+   python app/main.py
+   or
+   uvicorn app.main:app --reload
+
+5. Access API documentation:
+   http://localhost:8000/docs
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================

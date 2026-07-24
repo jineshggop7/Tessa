@@ -1,0 +1,24 @@
+# FastAPI
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+
+# Database
+motor
+pymongo
+
+# AI Models
+google-generativeai
+openai
+pillow
+
+# WebSocket
+websockets
+
+# Selenium (for test execution)
+selenium
+
+# Utilities
+python-dotenv
+python-multipart

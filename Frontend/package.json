@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@angular/cli": "^20.3.2"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}

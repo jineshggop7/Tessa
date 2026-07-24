@@ -100,33 +100,3 @@ Start your local MongoDB instance. If you are using the pre-packaged MongoDB bin
 * **`GET /api/execution-history`**: Fetch all previous test runs and executions.
 * **`POST /api/rerun-execution`**: Rerun a past execution with modifications.
 * **`ws://localhost:8000/ws/{execution_id}`**: WebSocket endpoint to receive real-time updates and console logs.
-
----
-
-## 📦 How to Push to GitHub
-
-To push this codebase to your public GitHub repository:
-
-1. **Initialize Git** in the project root:
-   ```bash
-   git init
-   ```
-2. **Add Remote** (replace with your repository URL):
-   ```bash
-   git remote add origin https://github.com/your-username/your-repo-name.git
-   ```
-3. **Stage all files**:
-   ```bash
-   git add .
-   ```
-   *(Note: The root `.gitignore` will automatically exclude large database files, local MongoDB binaries, virtual environments, node_modules, and secret credentials).*
-4. **Commit your changes**:
-   ```bash
-   git commit -m "Initial commit: Tessa AI Test Automation project"
-   ```
-5. **Rename default branch to main and Push**:
-   ```bash
-   git branch -M main
-   git push -u origin main
-   ```
-"# Tessa" 
