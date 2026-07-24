@@ -1,0 +1,134 @@
+<div class="analytics-container">
+  <div class="page-header">
+    <div class="header-icon">📊</div>
+    <div class="header-text">
+      <h1>Analytics Dashboard</h1>
+      <p>Comprehensive insights from execution history</p>
+    </div>
+    <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+      <span class="refresh-icon" [class.spinning]="isLoading">🔄</span>
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    <span class="alert-icon">⚠️</span>
+    <span class="alert-text"><strong>Error:</strong> {{ error }}</span>
+  </div>
+
+  <!-- Date Filter Controls -->
+  <div *ngIf="!isLoading && !error" class="date-filter-container">
+    <div class="date-filter-group">
+      <label class="date-filter-label">Filter by Date Range:</label>
+      <div class="date-inputs">
+        <input
+          type="date"
+          class="date-input"
+          [(ngModel)]="startDate"
+          placeholder="Start Date">
+        <span class="date-separator">to</span>
+        <input
+          type="date"
+          class="date-input"
+          [(ngModel)]="endDate"
+          placeholder="End Date">
+        <button
+          class="apply-filter-btn"
+          (click)="applyDateFilter()"
+          [disabled]="!startDate || !endDate">
+          Apply Filter
+        </button>
+        <button
+          class="clear-filter-btn"
+          (click)="clearDateFilter()"
+          title="Clear date filter">
+          ✕
+        </button>
+      </div>
+      <div class="filter-info">
+        <span class="filter-count">Showing {{ filteredHistory.length }} of {{ executionHistory.length }} executions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div *ngIf="!isLoading && !error" class="stats-summary">
+    <div class="stat-card">
+      <div class="stat-icon">🚀</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalExecutions }}</div>
+        <div class="stat-label">Total Executions</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ successRate }}%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ avgTestScenarios }}</div>
+        <div class="stat-label">Avg Test Scenarios</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalTestCases }}</div>
+        <div class="stat-label">Total Test Cases</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !error" class="charts-grid">
+    <!-- Row 1: Execution Status Over Time (Line) & Platform Distribution (Pie) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>📈 Execution Status Trend</h3>
+        <span class="chart-subtitle">Status over time</span>
+      </div>
+      <div class="chart-container">
+        <canvas #lineChart></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>🎯 Platform Distribution</h3>
+        <span class="chart-subtitle">Test coverage by platform</span>
+      </div>
+      <div class="chart-container">
+        <canvas #pieChart></canvas>
+      </div>
+    </div>
+
+    <!-- Row 2: Test Results by Platform (Bar) & AI Model Performance (Bar) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>📊 Test Results by Platform</h3>
+        <span class="chart-subtitle">Pass/Fail distribution</span>
+      </div>
+      <div class="chart-container">
+        <canvas #barChart></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>🤖 AI Model Performance</h3>
+        <span class="chart-subtitle">Success rate by model</span>
+      </div>
+      <div class="chart-container">
+        <canvas #barChart2></canvas>
+      </div>
+    </div>
+  </div>
+</div>

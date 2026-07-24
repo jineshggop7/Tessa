@@ -1,0 +1,81 @@
+<div class="login-container">
+  <!-- Left Typing Animation Card -->
+  <div class="animation-card left-card">
+    <div class="card-icon">🚀</div>
+    <div class="typing-text">
+      {{ currentLeftMessage }}
+    </div>
+  </div>
+
+  <!-- Center Login Card -->
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-section">
+        <div class="logo-icon">🤖</div>
+        <div class="brand-info">
+          <h1 class="brand-name">TESSA</h1>
+          <p class="brand-subtitle">TESSA - Testing End-to-End Smart Software Automation</p>
+          <p class="brand-tagline">Testing Every Software Always</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-body">
+      <h2 class="login-title">Welcome Back</h2>
+      <p class="login-description">Sign in to continue to your dashboard</p>
+
+      <form (ngSubmit)="onLogin()" class="login-form">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            [(ngModel)]="username"
+            class="form-input"
+            placeholder="Enter your username"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            class="form-input"
+            placeholder="Enter your password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+
+        <div class="error-message" *ngIf="errorMessage">
+          <span class="error-icon">⚠️</span>
+          {{ errorMessage }}
+        </div>
+
+        <div class="lockout-message" *ngIf="lockoutMessage">
+          <span class="lockout-icon">⏱️</span>
+          {{ lockoutMessage }}
+        </div>
+
+        <button type="submit" class="login-button" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading" class="loading-text">Signing in...</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Typing Animation Card -->
+  <div class="animation-card right-card">
+    <div class="card-icon">⚡</div>
+    <div class="typing-text">
+      {{ currentRightMessage }}
+    </div>
+  </div>
+</div>

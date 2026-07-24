@@ -1,0 +1,194 @@
+<div class="progress-container">
+  <div class="header">
+    <h2>Test Execution Progress</h2>
+    <div class="execution-info" *ngIf="execution">
+      <div class="info-item">
+        <strong>ID:</strong> {{ executionId.substring(0, 8) }}
+      </div>
+      <div class="info-item">
+        <strong>App:</strong> {{ execution.app_name }}
+      </div>
+      <div class="info-item">
+        <strong>Platform:</strong> {{ execution.app_platform }}
+      </div>
+      <div class="info-item">
+        <strong>Model:</strong> {{ execution.ai_model }}
+      </div>
+    </div>
+  </div>
+
+  <div class="status-section" *ngIf="execution">
+    <div class="status-card" [class]="'status-' + execution.status">
+      <div class="status-icon">{{ getStatusIcon(execution.status) }}</div>
+      <div class="status-text">
+        <h3>{{ getStatusText(execution.status) }}</h3>
+        <p class="status-description">{{ getStatusDescription(execution.status) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width]="getProgressPercentage() + '%'"></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ testScenarios.length }}</div>
+      <div class="stat-label">Test Scenarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getPassedCount() }}</div>
+      <div class="stat-label">Passed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getFailedCount() }}</div>
+      <div class="stat-label">Failed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getPendingCount() }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+
+  <!-- Test Case Selection Section (shown when scenarios are ready) -->
+  <div class="scenarios-selection-section" *ngIf="showScenariosReady && testScenarios.length > 0">
+    <div class="selection-header">
+      <h3>✅ Test Scenarios Generated - Select to Execute</h3>
+      <div class="selection-actions">
+        <button (click)="selectAllScenarios()" class="btn btn-sm btn-secondary">Select All</button>
+        <button (click)="deselectAllScenarios()" class="btn btn-sm btn-secondary">Deselect All</button>
+        <button 
+          (click)="executeSelectedScenarios()" 
+          [disabled]="selectedScenarios.size === 0"
+          class="btn btn-primary">
+          ▶️ Execute Selected ({{ selectedScenarios.size }})
+        </button>
+      </div>
+    </div>
+
+    <div class="scenario-selection-list">
+      <div *ngFor="let scenario of testScenarios" class="scenario-selection-card">
+        <div class="selection-checkbox">
+          <input 
+            type="checkbox" 
+            [id]="'scenario-' + scenario.scenario_id"
+            [checked]="isScenarioSelected(scenario.scenario_id)"
+            (change)="toggleScenarioSelection(scenario.scenario_id)">
+        </div>
+        <div class="scenario-content">
+          <div class="scenario-header">
+            <label [for]="'scenario-' + scenario.scenario_id" class="scenario-title">
+              {{ scenario.scenario_name }}
+            </label>
+            <span class="scenario-priority priority-{{ scenario.priority }}">{{ scenario.priority }}</span>
+          </div>
+          <div class="scenario-id">ID: {{ scenario.scenario_id }}</div>
+          <div class="scenario-description">{{ scenario.description }}</div>
+          <div class="scenario-steps" *ngIf="scenario.test_steps && scenario.test_steps.length > 0">
+            <strong>Steps ({{ scenario.test_steps.length }}):</strong>
+            <ol>
+              <li *ngFor="let step of scenario.test_steps">
+                <strong>{{ step.action }}</strong>
+                <br>
+                <span class="expected">Expected: {{ step.expected_result }}</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div class="scenario-actions">
+          <button 
+            (click)="executeScenario(scenario.scenario_id)" 
+            class="btn btn-sm btn-execute"
+            [disabled]="isExecuting">
+            ▶️ Execute
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution Progress Section (shown during/after execution) -->
+  <div class="scenarios-execution-section" *ngIf="!showScenariosReady && testScenarios.length > 0">
+    <h3>Test Scenarios Execution</h3>
+    <div class="scenario-execution-list">
+      <div *ngFor="let scenario of testScenarios" class="scenario-execution-card" [class]="getScenarioStatusClass(scenario.scenario_id)">
+        <div class="scenario-exec-header">
+          <div class="scenario-info">
+            <span class="scenario-status-icon">{{ getScenarioStatusIcon(scenario.scenario_id) }}</span>
+            <span class="scenario-title">{{ scenario.scenario_name }}</span>
+            <span class="scenario-id">({{ scenario.scenario_id }})</span>
+          </div>
+          <div class="scenario-status-badge" [class]="getScenarioStatusClass(scenario.scenario_id)">
+            {{ getScenarioStatusText(scenario.scenario_id) }}
+          </div>
+        </div>
+        
+        <div class="scenario-description">{{ scenario.description }}</div>
+
+        <!-- Live Logs for this scenario -->
+        <div class="scenario-logs" *ngIf="getScenarioLogs(scenario.scenario_id).length > 0">
+          <div class="logs-header">
+            <strong>📋Live Logs:</strong>
+          </div>
+          <div class="log-container scenario-log-container">
+            <div *ngFor="let log of getScenarioLogs(scenario.scenario_id)" class="log-entry">
+              {{ log }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Execution Result -->
+        <div class="scenario-result" *ngIf="getScenarioResult(scenario.scenario_id) as result">
+          <div class="result-header">
+            <strong>Result: </strong>
+            <span [class]="'result-badge result-' + result.result.toLowerCase()">{{ result.result }}</span>
+          </div>
+          <div class="result-summary">{{ result.summary }}</div>
+          <div class="result-observation" *ngIf="result.observation">
+            <strong>Observation:</strong> {{ result.observation }}
+          </div>
+          <details class="execution-details" *ngIf="result.execution_details">
+            <summary>Technical Details</summary>
+            <div class="details-content">
+              <p><strong>Success:</strong> {{ result.execution_details.success }}</p>
+              <p><strong>Return Code:</strong> {{ result.execution_details.returncode }}</p>
+              <div *ngIf="result.execution_details.stdout" class="output-section">
+                <strong>Output:</strong>
+                <pre>{{ result.execution_details.stdout }}</pre>
+              </div>
+              <div *ngIf="result.execution_details.stderr" class="error-section">
+                <strong>Errors:</strong>
+                <pre>{{ result.execution_details.stderr }}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="testScenarios.length === 0" class="empty-state">
+    <div class="empty-icon">🤖</div>
+    <h3>Generating Test Scenarios...</h3>
+    <p>AI is analyzing your application and creating test scenarios. This may take a minute.</p>
+  </div>
+
+  <!-- General Logs Section -->
+  <div class="logs-section" *ngIf="logMessages.length > 0">
+    <h3>📝 General Execution Logs</h3>
+    <div class="log-container">
+      <div *ngFor="let log of logMessages" class="log-entry">{{ log }}</div>
+    </div>
+  </div>
+
+  <div class="connection-status" [class.connected]="wsConnected">
+    {{ wsConnected ? '🟢 Live Updates Active' : '🔴 Disconnected' }}
+  </div>
+
+  <div class="action-buttons" *ngIf="execution && execution.status === 'completed'">
+    <button (click)="viewReport()" class="btn btn-primary">
+      📄 View Full Report
+    </button>
+  </div>
+</div>

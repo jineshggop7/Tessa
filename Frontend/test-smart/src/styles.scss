@@ -1,0 +1,244 @@
+/* Professional Blue Theme - Corporate Design System */
+
+:root {
+  /* Base Colors - Professional Blue Theme */
+  --gh-canvas-default: #0a1929;
+  --gh-canvas-subtle: #132f4c;
+  --gh-canvas-inset: #0d2135;
+  --gh-canvas-elevated: #1a2f45;
+  
+  /* Text Colors - High Contrast */
+  --gh-fg-default: #e3f2fd;
+  --gh-fg-muted: #b0c4de;
+  --gh-fg-subtle: #8ba3c1;
+  
+  /* Borders - Subtle Blue Tones */
+  --gh-border-default: #2d4a68;
+  --gh-border-muted: #1e3a52;
+  --gh-border-subtle: #173247;
+  
+  /* Accent Blue - Vibrant Professional */
+  --gh-accent-fg: #2196f3;
+  --gh-accent-emphasis: #1976d2;
+  --gh-accent-hover: #1565c0;
+  --gh-accent-muted: rgba(33, 150, 243, 0.3);
+  --gh-accent-subtle: rgba(33, 150, 243, 0.15);
+  
+  /* Status Colors - Material Design */
+  --gh-success-fg: #4caf50;
+  --gh-success-emphasis: #43a047;
+  --gh-success-muted: rgba(76, 175, 80, 0.3);
+  --gh-success-subtle: rgba(76, 175, 80, 0.15);
+  
+  --gh-danger-fg: #f44336;
+  --gh-danger-emphasis: #e53935;
+  --gh-danger-muted: rgba(244, 67, 54, 0.3);
+  --gh-danger-subtle: rgba(244, 67, 54, 0.15);
+  
+  --gh-attention-fg: #ff9800;
+  --gh-attention-emphasis: #fb8c00;
+  --gh-attention-muted: rgba(255, 152, 0, 0.3);
+  --gh-attention-subtle: rgba(255, 152, 0, 0.15);
+  
+  --gh-neutral-emphasis: #607d8b;
+  --gh-neutral-muted: rgba(96, 125, 139, 0.3);
+  --gh-neutral-subtle: rgba(96, 125, 139, 0.15);
+  
+  /* Shadows - Enhanced for Dark Theme */
+  --gh-shadow-small: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --gh-shadow-medium: 0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  --gh-shadow-large: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+  --gh-shadow-floating: 0 12px 24px 0 rgba(0, 0, 0, 0.5), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
+  
+  /* Spacing - Material Design 8px Grid */
+  --gh-space-1: 4px;
+  --gh-space-2: 8px;
+  --gh-space-3: 12px;
+  --gh-space-4: 16px;
+  --gh-space-5: 24px;
+  --gh-space-6: 32px;
+  --gh-space-7: 48px;
+  --gh-space-8: 64px;
+  
+  /* Border Radius - Rounded Corners */
+  --gh-radius-small: 8px;
+  --gh-radius-medium: 12px;
+  --gh-radius-large: 16px;
+  --gh-radius-xl: 24px;
+  
+  /* Typography - Google Fonts */
+  --gh-font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --gh-font-mono: 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  
+  /* Transitions - Material Motion */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--gh-font-family);
+  color: var(--gh-fg-default);
+  background: var(--gh-canvas-default);
+  line-height: 1.6;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card Component Styles */
+.card {
+  background: var(--gh-canvas-elevated);
+  border-radius: var(--gh-radius-medium);
+  box-shadow: var(--gh-shadow-small);
+  padding: var(--gh-space-5);
+  transition: box-shadow var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--gh-shadow-medium);
+}
+
+.card-large {
+  border-radius: var(--gh-radius-large);
+  box-shadow: var(--gh-shadow-medium);
+}
+
+/* Button Styles */
+button, .btn {
+  font-family: var(--gh-font-family);
+  font-weight: 500;
+  border-radius: var(--gh-radius-small);
+  padding: var(--gh-space-2) var(--gh-space-4);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  background: var(--gh-accent-fg);
+  color: white;
+  box-shadow: 0 1px 2px 0 rgba(26, 115, 232, 0.3);
+}
+
+.btn-primary:hover {
+  background: var(--gh-accent-hover);
+  box-shadow: 0 1px 3px 0 rgba(26, 115, 232, 0.4);
+}
+
+/* Input Styles */
+input, textarea, select {
+  font-family: var(--gh-font-family);
+  border: 1px solid var(--gh-border-default);
+  border-radius: var(--gh-radius-small);
+  padding: var(--gh-space-2) var(--gh-space-3);
+  background: var(--gh-canvas-subtle);
+  color: var(--gh-fg-default);
+  transition: all var(--transition-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--gh-accent-fg);
+  box-shadow: 0 0 0 2px var(--gh-accent-subtle);
+}
+
+code, pre {
+  font-family: var(--gh-font-mono);
+}
+
+/* GitHub-style buttons */
+.gh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gh-space-2);
+  padding: 5px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  border: 1px solid;
+  border-radius: var(--gh-radius-small);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  text-decoration: none;
+}
+
+.gh-btn-primary {
+  color: #ffffff;
+  background-color: var(--gh-accent-emphasis);
+  border-color: rgba(240, 246, 252, 0.1);
+  box-shadow: 0 1px 0 rgba(31, 35, 40, 0.1);
+}
+
+.gh-btn-primary:hover:not(:disabled) {
+  background-color: #1a7ff0;
+  border-color: rgba(240, 246, 252, 0.1);
+  box-shadow: 0 0 0 3px var(--gh-accent-muted);
+}
+
+.gh-btn-secondary {
+  color: var(--gh-fg-default);
+  background-color: var(--gh-canvas-subtle);
+  border-color: var(--gh-border-default);
+  box-shadow: var(--gh-shadow-small);
+}
+
+.gh-btn-secondary:hover:not(:disabled) {
+  background-color: var(--gh-border-default);
+  border-color: var(--gh-border-muted);
+}
+
+.gh-btn:disabled {
+  color: var(--gh-fg-muted);
+  background-color: var(--gh-canvas-subtle);
+  border-color: var(--gh-border-default);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* GitHub-style cards */
+.gh-card {
+  background: var(--gh-canvas-subtle);
+  border: 1px solid var(--gh-border-default);
+  border-radius: var(--gh-radius-medium);
+  box-shadow: var(--gh-shadow-small);
+}
+
+/* GitHub-style badges */
+.gh-badge {
+  display: inline-block;
+  padding: 0 7px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  border-radius: 2em;
+  white-space: nowrap;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gh-canvas-default);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gh-border-default);
+  border-radius: 5px;
+  border: 2px solid var(--gh-canvas-default);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gh-neutral-emphasis);
+}

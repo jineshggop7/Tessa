@@ -1,0 +1,155 @@
+<div class="report-container">
+  <div class="report-header">
+    <h2>Test Execution Report</h2>
+    <div class="execution-id" 
+         [title]="'Full ID: ' + executionId + ' (Click to copy)'" 
+         (click)="copyExecutionId()"
+         style="cursor: pointer;">
+      Execution ID: {{ executionId.substring(0, 8) }}... 📋
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading report...
+  </div>
+
+  <div *ngIf="!loading && execution">
+    <!-- Execution Info -->
+    <div class="info-section">
+      <div class="info-item">
+        <strong>Application:</strong> {{ execution.app_name }}
+      </div>
+      <div class="info-item">
+        <strong>Platform:</strong> {{ execution.app_platform }}
+      </div>
+      <div class="info-item">
+        <strong>AI Model:</strong> {{ execution.ai_model }}
+      </div>
+      <div class="info-item">
+        <strong>Created:</strong> {{ execution.created_at | date:'medium' }}
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card total">
+        <div class="card-icon">📊</div>
+        <div class="card-content">
+          <div class="card-value">{{ getTotalCount() }}</div>
+          <div class="card-label">Total Scenarios</div>
+        </div>
+      </div>
+
+      <div class="summary-card passed">
+        <div class="card-icon">✅</div>
+        <div class="card-content">
+          <div class="card-value">{{ getPassedCount() }}</div>
+          <div class="card-label">Passed</div>
+        </div>
+      </div>
+
+      <div class="summary-card failed">
+        <div class="card-icon">❌</div>
+        <div class="card-content">
+          <div class="card-value">{{ getFailedCount() }}</div>
+          <div class="card-label">Failed</div>
+        </div>
+      </div>
+
+      <div class="summary-card success-rate">
+        <div class="card-icon">📈</div>
+        <div class="card-content">
+          <div class="card-value">{{ getSuccessRate() }}%</div>
+          <div class="card-label">Success Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Summary -->
+    <div class="summary-section" *ngIf="execution.summary">
+      <h3>Executive Summary</h3>
+      <div class="summary-text">{{ execution.summary }}</div>
+      <div class="overall-result" *ngIf="execution.overall_result">
+        <strong>Overall Result:</strong> 
+        <span [class]="'result-badge result-' + execution.overall_result.toLowerCase()">
+          {{ execution.overall_result }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Observation -->
+    <div class="summary-section" *ngIf="execution.observation">
+      <h3>Observations</h3>
+      <div class="summary-text">{{ execution.observation }}</div>
+    </div>
+
+    <!-- Test Scenarios Results -->
+    <div class="scenarios-results-section">
+      <h3>Test Scenario Results</h3>
+      <div *ngIf="!execution.execution_results || execution.execution_results.length === 0" class="empty-state">
+        No execution results available
+      </div>
+      <div class="results-list">
+        <div *ngFor="let result of execution.execution_results" class="result-card" [class]="'result-' + result.result.toLowerCase()">
+          <div class="result-header">
+            <span class="result-icon">{{ getStatusIcon(result.result) }}</span>
+            <div class="result-info">
+              <h4>{{ result.scenario_name }}</h4>
+              <div class="scenario-id">{{ result.scenario_id }}</div>
+            </div>
+            <span class="result-badge" [class]="'badge-' + result.result.toLowerCase()">
+              {{ result.result }}
+            </span>
+          </div>
+          <div class="result-body">
+            <div class="result-summary">
+              <strong>Summary:</strong> {{ result.summary }}
+            </div>
+            <div class="result-observation" *ngIf="result.observation">
+              <strong>Observation:</strong> {{ result.observation }}
+            </div>
+            <div class="execution-details" *ngIf="result.execution_details">
+              <strong>Execution Details:</strong>
+              <div class="detail-item">
+                <span class="label">Success:</span> 
+                <span [class]="result.execution_details.success ? 'text-success' : 'text-error'">
+                  {{ result.execution_details.success ? 'Yes' : 'No' }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Return Code:</span> 
+                <span>{{ result.execution_details.returncode }}</span>
+              </div>
+              <div class="stdout" *ngIf="result.execution_details.stdout">
+                <strong>Output:</strong>
+                <pre>{{ result.execution_details.stdout }}</pre>
+              </div>
+              <div class="stderr" *ngIf="result.execution_details.stderr">
+                <strong>Errors:</strong>
+                <pre class="error-text">{{ result.execution_details.stderr }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button (click)="downloadReport()" class="btn btn-primary">
+        📥 Download Report
+      </button>
+      <button (click)="goBack()" class="btn btn-secondary">
+        ← Back
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !execution" class="error-state">
+    <h3>Report Not Found</h3>
+    <p>Unable to load report for execution {{ executionId }}</p>
+    <button (click)="goBack()" class="btn btn-secondary">
+      ← Back
+    </button>
+  </div>
+</div>

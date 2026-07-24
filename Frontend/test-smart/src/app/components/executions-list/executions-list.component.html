@@ -1,0 +1,125 @@
+<div class="executions-container">
+  <div class="header">
+    <h1>Test Executions</h1>
+    <p class="subtitle">View all your test execution history and results</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading executions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-message">
+    <span class="error-icon">⚠️</span>
+    <p>{{ error }}</p>
+    <button (click)="loadExecutions()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Executions List -->
+  <div *ngIf="!loading && !error" class="executions-grid">
+    <div *ngIf="executions.length === 0" class="empty-state">
+      <span class="empty-icon">📊</span>
+      <h2>No Executions Yet</h2>
+      <p>Start your first test execution to see results here</p>
+    </div>
+
+    <div *ngFor="let execution of executions" class="execution-card">
+      <div class="card-header">
+        <div class="execution-info">
+          <h3 class="app-name">{{ execution.app_name }}</h3>
+          <span class="execution-id" 
+                [title]="'Full ID: ' + execution.execution_id + ' (Click to copy)'" 
+                (click)="copyToClipboard(execution.execution_id, $event)"
+                style="cursor: pointer;">
+            <span class="icon">🔖</span>
+            <span class="id-text">{{ execution.execution_id.substring(0, 8) }}...</span>
+            <span class="copy-hint" style="font-size: 0.8em; opacity: 0.7; margin-left: 4px;">📋</span>
+          </span>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(execution.status)">
+          {{ getStatusText(execution.status) }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="app-details">
+          <div class="detail-item">
+            <span class="label">Platform:</span>
+            <span class="value">{{ execution.app_platform | titlecase }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">AI Model:</span>
+            <span class="value">{{ execution.ai_model | uppercase }}</span>
+          </div>
+        </div>
+
+        <p class="app-description" *ngIf="execution.app_description">
+          {{ execution.app_description }}
+        </p>
+        
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Scenarios</span>
+            <span class="stat-value">{{ getTotalScenarios(execution) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Passed</span>
+            <span class="stat-value success">{{ getPassedCount(execution) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Failed</span>
+            <span class="stat-value failed">{{ getFailedCount(execution) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Success Rate</span>
+            <span class="stat-value">{{ getSuccessRate(execution) }}%</span>
+          </div>
+        </div>
+
+        <div class="progress-bar" *ngIf="getTotalScenarios(execution) > 0">
+          <div class="progress-fill" 
+               [style.width.%]="getSuccessRate(execution)"
+               [ngClass]="getSuccessRate(execution) >= 80 ? 'success' : 'warning'">
+          </div>
+        </div>
+
+        <div class="summary" *ngIf="execution.summary">
+          <strong>Summary:</strong>
+          <p class="summary-text">
+            {{ execution.summary }}
+          </p>
+        </div>
+
+        <div class="timestamps">
+          <div class="timestamp">
+            <span class="label">Created:</span>
+            <span class="value">{{ formatDate(execution.created_at) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button (click)="viewMonitor(execution.execution_id)" class="btn btn-primary">
+          <span class="btn-icon">📺</span>
+          Live Monitor
+        </button>
+        <button (click)="viewProgress(execution.execution_id)" class="btn btn-secondary">
+          <span class="btn-icon">📊</span>
+          View Progress
+        </button>
+        <button (click)="viewReport(execution.execution_id)" 
+                class="btn btn-secondary"
+                [disabled]="isExecutionInProgress(execution.status)">
+          <span class="btn-icon">📄</span>
+          View Report
+        </button>
+        <button (click)="rerunExecution(execution)" class="btn btn-secondary">
+          <span class="btn-icon">🔄</span>
+          Rerun
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

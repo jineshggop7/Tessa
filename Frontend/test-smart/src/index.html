@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TESSA - Testing End-to-End Smart Software Automation</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    @keyframes dotExpand {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(var(--x), var(--y));
+      }
+    }
+
+    @keyframes colorRotate1 {
+      0%, 24% {
+        background: #2196f3;
+      }
+      25%, 100% {
+        background: #0a1929;
+      }
+    }
+
+    @keyframes colorRotate2 {
+      0%, 24% {
+        background: #0a1929;
+      }
+      25%, 49% {
+        background: #2196f3;
+      }
+      50%, 100% {
+        background: #0a1929;
+      }
+    }
+
+    @keyframes colorRotate3 {
+      0%, 49% {
+        background: #0a1929;
+      }
+      50%, 74% {
+        background: #2196f3;
+      }
+      75%, 100% {
+        background: #0a1929;
+      }
+    }
+
+    @keyframes colorRotate4 {
+      0%, 74% {
+        background: #0a1929;
+      }
+      75%, 100% {
+        background: #2196f3;
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      background: linear-gradient(180deg, #1e3a52 0%, #0d2135 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .spinner.loaded {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+
+    .dot-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .dot {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      margin: -12px 0 0 -12px;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .dot:nth-child(1) {
+      --x: -25px;
+      --y: -25px;
+      animation: dotExpand 1.5s ease-in-out infinite, colorRotate1 6s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) {
+      --x: 25px;
+      --y: -25px;
+      animation: dotExpand 1.5s ease-in-out infinite, colorRotate2 6s ease-in-out infinite;
+    }
+
+    .dot:nth-child(3) {
+      --x: -25px;
+      --y: 25px;
+      animation: dotExpand 1.5s ease-in-out infinite, colorRotate3 6s ease-in-out infinite;
+    }
+
+    .dot:nth-child(4) {
+      --x: 25px;
+      --y: 25px;
+      animation: dotExpand 1.5s ease-in-out infinite, colorRotate4 6s ease-in-out infinite;
+    }
+
+    .loading-text {
+      font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #e3f2fd;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    .brand-loading {
+      font-size: 32px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .brand-subtitle-loading {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.8);
+      letter-spacing: 0.02em;
+    }
+
+    .brand-tagline-loading {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.02em;
+      font-style: italic;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="nb-global-spinner" class="spinner">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 32px;">
+      <div class="loading-text">
+        <div class="brand-loading">TESSA</div>
+        <div class="brand-subtitle-loading">TESSA - Testing End-to-End Smart Software Automation</div>
+        <div class="brand-tagline-loading">Testing Every System Always</div>
+      </div>
+      <div class="dot-container">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+  <app-root></app-root>
+  <script>
+    // Hide spinner when Angular app is loaded (minimum 6 seconds)
+    window.addEventListener('DOMContentLoaded', () => {
+      const spinner = document.getElementById('nb-global-spinner');
+      // Wait for Angular to bootstrap with minimum 6 second display
+      setTimeout(() => {
+        if (spinner) {
+          spinner.classList.add('loaded');
+        }
+      }, 6000);
+    });
+  </script>
+</body>
+</html>

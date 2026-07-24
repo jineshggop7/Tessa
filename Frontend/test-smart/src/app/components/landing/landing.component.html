@@ -1,0 +1,132 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-icon">✨</span>
+        <span class="badge-text">AI-Powered Test Automation Platform</span>
+      </div>
+      
+      <h1 class="hero-title">
+        Revolutionize Your Testing with
+        <span class="gradient-text">AI Intelligence</span>
+      </h1>
+      
+      <p class="hero-description">
+        {{ heroDescription }}
+      </p>
+      
+      <div class="hero-actions">
+        <button class="cta-button primary" (click)="navigateToStart()">
+          <span class="button-icon">🚀</span>
+          <span>Start Testing Now</span>
+        </button>
+        <button class="cta-button secondary">
+          <span class="button-icon">📖</span>
+          <span>Learn More</span>
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value">4</div>
+          <div class="stat-label">AI Agents</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">End-to-End</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value">Real-time</div>
+          <div class="stat-label">Updates</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2 class="section-title">Powerful Features</h2>
+      <p class="section-description">
+        Everything you need for intelligent, automated testing in one platform
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon" [style.background]="'linear-gradient(135deg, ' + feature.color + ', ' + feature.color + 'dd)'">
+          {{ feature.icon }}
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="workflow-section">
+    <div class="section-header">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-description">
+        Four intelligent agents working in perfect harmony
+      </p>
+    </div>
+
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3 class="step-title">Upload & Describe</h3>
+          <p class="step-description">Provide screenshots, app description, and custom prompts</p>
+        </div>
+      </div>
+
+      <div class="workflow-arrow">→</div>
+
+      <div class="workflow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3 class="step-title">AI Generates Tests</h3>
+          <p class="step-description">Agent 1 creates comprehensive test scenarios and steps</p>
+        </div>
+      </div>
+
+      <div class="workflow-arrow">→</div>
+
+      <div class="workflow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3 class="step-title">Code Generation</h3>
+          <p class="step-description">Agent 2 writes production-ready Selenium Python code</p>
+        </div>
+      </div>
+
+      <div class="workflow-arrow">→</div>
+
+      <div class="workflow-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3 class="step-title">Execute & Analyze</h3>
+          <p class="step-description">Agent 3 runs tests and Agent 4 (Tessa) answers your questions</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Transform Your Testing?</h2>
+      <p class="cta-description">
+        Start automating your tests with AI-powered intelligence today
+      </p>
+      <button class="cta-button-large" (click)="navigateToStart()">
+        <span class="button-icon">🚀</span>
+        <span>Get Started Now</span>
+      </button>
+    </div>
+  </section>
+</div>

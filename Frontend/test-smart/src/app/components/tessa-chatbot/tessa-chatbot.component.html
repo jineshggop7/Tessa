@@ -1,0 +1,106 @@
+<div class="chatbot-container">
+  <div class="chatbot-header">
+    <div class="header-content">
+      <div class="bot-avatar">🤖</div>
+      <div class="bot-info">
+        <h2>Tessa</h2>
+        <p>Your AI Testing Assistant</p>
+      </div>
+    </div>
+    <button (click)="clearConversation()" class="clear-btn" title="Clear conversation">
+      🗑️
+    </button>
+  </div>
+
+  <div class="chatbot-config">
+    <div class="config-field">
+      <label for="executionId">Execution ID (Full UUID):</label>
+      <div class="input-with-refresh">
+        <input 
+          type="text" 
+          id="executionId"
+          [(ngModel)]="executionId" 
+          (change)="setExecutionId()"
+          placeholder="e.g., 03971a9c-799d-43c4-9287-c3b35a16234c"
+          class="config-input">
+        <button (click)="loadLatestExecutionId()" class="refresh-btn" [disabled]="isLoadingExecutionId" title="Load latest execution ID">
+          {{ isLoadingExecutionId ? '⏳' : '🔄' }}
+        </button>
+      </div>
+      <small style="color: #888; font-size: 0.85em; margin-top: 4px; display: block;">
+        💡 Tip: Click the execution ID in Live Monitor or Executions List to copy the full ID
+      </small>
+    </div>
+    <div class="config-field">
+      <label for="aiModel">AI Model:</label>
+      <select id="aiModel" [(ngModel)]="aiModel" (change)="setAiModel()" class="config-select">
+        <option *ngFor="let model of aiModels" [value]="model">{{ model | uppercase }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="chat-messages" #messagesContainer>
+    <div *ngIf="messages.length === 0" class="welcome-message">
+      <div class="welcome-icon">👋</div>
+      <h3>Hi! I'm Tessa</h3>
+      <p>I can help you understand your test execution results, analyze failures, and answer questions about your testing process.</p>
+      <div class="example-questions">
+        <p><strong>Try asking:</strong></p>
+        <ul>
+          <li>"What was the result of the login test?"</li>
+          <li>"Why did test X fail?"</li>
+          <li>"Give me a summary of the test results"</li>
+          <li>"How many scenarios passed?"</li>
+        </ul>
+      </div>
+      <div class="config-hint">
+        💡 <strong>Note:</strong> Enter an Execution ID above to get context-aware answers about specific test runs.
+      </div>
+    </div>
+
+    <div *ngFor="let msg of messages" class="message" [class.user-message]="msg.role === 'user'" [class.assistant-message]="msg.role === 'assistant'">
+      <div class="message-avatar">
+        {{ msg.role === 'user' ? '👤' : '🤖' }}
+      </div>
+      <div class="message-content">
+        <div class="message-text" [class.typing]="msg.isTyping">
+          {{ msg.isTyping ? (msg.displayedContent || '') : msg.content }}
+          <span *ngIf="msg.isTyping" class="typing-cursor">|</span>
+        </div>
+        <div class="message-time">{{ formatTime(msg.timestamp) }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="message assistant-message">
+      <div class="message-avatar">🤖</div>
+      <div class="message-content">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-container">
+    <div class="input-wrapper">
+      <input 
+        type="text" 
+        [(ngModel)]="currentMessage" 
+        (keyup.enter)="sendMessage()"
+        [disabled]="isLoading"
+        placeholder="Ask me anything about your tests..."
+        class="chat-input">
+      <button 
+        (click)="sendMessage()" 
+        [disabled]="!currentMessage.trim() || isLoading"
+        class="send-btn">
+        {{ isLoading ? '⏳' : '📤' }}
+      </button>
+    </div>
+    <div class="input-hint">
+      💡 Ask context-specific questions about the execution you've selected
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="app-container">
+  <!-- Left Sidebar (hidden on login and landing pages) -->
+  <aside class="sidebar" *ngIf="showSidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-name">TESSA</span>
+        <span class="brand-subtitle">TESSA - Testing End-to-End Smart Software Automation</span>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a routerLink="/start" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Start Execution</span>
+      </a>
+      <a routerLink="/monitor/current" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📺</span>
+        <span class="nav-text">Live Monitor</span>
+      </a>
+      <a routerLink="/executions" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Executions</span>
+      </a>
+      <a routerLink="/analytics" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📈</span>
+        <span class="nav-text">Analytics</span>
+      </a>
+      <a routerLink="/tessa" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💬</span>
+        <span class="nav-text">Ask Tessa</span>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout()">
+        <span class="nav-icon">🚪</span>
+        <span>Logout</span>
+      </button>
+      <div class="version">v1.0.0</div>
+    </div>
+  </aside>
+  
+  <!-- Main Content Area -->
+  <main class="main-content" [class.full-width]="!showSidebar">
+    <router-outlet></router-outlet>
+  </main>
+</div>
