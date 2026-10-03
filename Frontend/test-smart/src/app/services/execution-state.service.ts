@@ -5,7 +5,8 @@ import {
   ExecutionHistoryItem, 
   TestScenario, 
   ExecutionResult,
-  WebSocketMessage 
+  WebSocketMessage,
+  normalizeExecutionResult
 } from './api.service';
 
 @Injectable({
@@ -39,9 +40,10 @@ export class ExecutionStateService {
   }
 
   setCurrentExecution(execution: ExecutionHistoryItem) {
-    this.currentExecutionSubject.next(execution);
+    const normalizedResults = (execution.execution_results || []).map(normalizeExecutionResult);
+    this.currentExecutionSubject.next({ ...execution, execution_results: normalizedResults });
     this.testScenariosSubject.next(execution.test_scenarios || []);
-    this.executionResultsSubject.next(execution.execution_results || []);
+    this.executionResultsSubject.next(normalizedResults);
   }
 
   setTestScenarios(scenarios: TestScenario[]) {
@@ -54,12 +56,12 @@ export class ExecutionStateService {
   }
 
   setExecutionResults(results: ExecutionResult[]) {
-    this.executionResultsSubject.next(results);
+    this.executionResultsSubject.next(results.map(normalizeExecutionResult));
   }
 
   addExecutionResult(result: ExecutionResult) {
     const current = this.executionResultsSubject.value;
-    this.executionResultsSubject.next([...current, result]);
+    this.executionResultsSubject.next([...current, normalizeExecutionResult(result)]);
   }
 
   connectToExecution(executionId: string) {
@@ -167,7 +169,7 @@ export class ExecutionStateService {
           
           if (existingIndex >= 0) {
             // Update existing result
-            currentResults[existingIndex] = message.data.result;
+            currentResults[existingIndex] = normalizeExecutionResult(message.data.result);
             this.executionResultsSubject.next([...currentResults]);
           } else {
             // Add new result only if it doesn't exist
@@ -214,7 +216,7 @@ export class ExecutionStateService {
           
           if (existingIndex >= 0) {
             // Update existing result
-            currentResults[existingIndex] = message.data.result;
+            currentResults[existingIndex] = normalizeExecutionResult(message.data.result);
             this.executionResultsSubject.next([...currentResults]);
           } else {
             // Add new result only if it doesn't exist

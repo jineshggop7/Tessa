@@ -30,7 +30,7 @@ class GeminiModel(BaseAIModel):
                 "temperature": 0.2,
                 "top_p": 0.9,
                 "top_k": 40,
-                "max_output_tokens": 4096,
+                "max_output_tokens": 8192,
             },
         )
 
@@ -93,6 +93,8 @@ class GeminiModel(BaseAIModel):
             if not response or not response.text:
                 raise RuntimeError("Empty vision response from Gemini")
 
+            finish_reason = response.candidates[0].finish_reason if response.candidates else "unknown"
+            logger.debug("Gemini vision response finish reason: %s", finish_reason)
             return response.text
 
         except Exception as e:

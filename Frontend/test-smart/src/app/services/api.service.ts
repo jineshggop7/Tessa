@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { environment } from '../../environments/environment';
 
@@ -117,6 +117,42 @@ export interface WebSocketMessage {
   timestamp: string;
 }
 
+function formatDisplayText(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) {
+    return value.map(formatDisplayText).filter(Boolean).join('\n');
+  }
+  if (typeof value === 'object') {
+    return Object.entries(value as Record<string, unknown>)
+      .map(([key, item]) => {
+        const label = key.replace(/[_-]+/g, ' ').replace(/\b\w/g, character => character.toUpperCase());
+        const text = formatDisplayText(item);
+        return text ? `${label}: ${text}` : '';
+      })
+      .filter(Boolean)
+      .join('\n');
+  }
+  return '';
+}
+
+export function normalizeExecutionResult(result: ExecutionResult): ExecutionResult {
+  const summary = formatDisplayText(result.summary).replace(/^\s*(?:\*\*\s*)?Summary\s*:\s*(?:\*\*\s*)?/i, '');
+  return {
+    ...result,
+    summary,
+    observation: formatDisplayText(result.observation)
+  };
+}
+
+function normalizeExecution(execution: ExecutionHistoryItem): ExecutionHistoryItem {
+  return {
+    ...execution,
+    execution_results: (execution.execution_results || []).map(normalizeExecutionResult)
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -158,7 +194,10 @@ export class ApiService {
     return this.http.get<ExecutionHistoryResponse>(
       `${this.baseUrl}/api/execution-history`,
       { params: { limit: limit.toString(), skip: skip.toString() } }
-    );
+    ).pipe(map(response => ({
+      ...response,
+      executions: (response.executions || []).map(normalizeExecution)
+    })));
   }
 
   // API 4: Rerun Execution

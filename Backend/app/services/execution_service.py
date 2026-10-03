@@ -249,7 +249,8 @@ class ExecutionService:
                 agent2 = CodeGeneratorAgent(ai_model, execution_id)
                 code = await agent2.process(
                     test_scenario=scenario,
-                    app_platform=app_platform
+                    app_platform=app_platform,
+                    custom_prompt=execution.get("custom_prompt")
                 )
                 
                 # Save script

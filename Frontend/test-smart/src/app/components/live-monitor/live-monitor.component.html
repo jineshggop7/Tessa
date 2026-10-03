@@ -306,10 +306,15 @@
               <div class="scenario-id">{{ result.scenario_id }}</div>
               <div class="result-status">{{ result.result }}</div>
             </div>
+            <button class="result-expand-btn" type="button"
+                    [attr.aria-label]="'Maximize result card for ' + result.scenario_id"
+                    title="Maximize card" (click)="openExpandedResult(result)">
+              <span aria-hidden="true">&#x26F6;</span>
+            </button>
           </div>
 
           <div class="result-summary" *ngIf="result.summary">
-            <strong>Summary:</strong>
+            <strong class="ai-summary-label"><span aria-hidden="true">&#10024;</span> AI-generated summary</strong>
             <p>{{ result.summary }}</p>
           </div>
 
@@ -339,6 +344,49 @@
         <p>Test results will appear here after execution</p>
       </div>
     </div>
+  </div>
+
+  <div class="result-modal-backdrop" *ngIf="expandedResult as result"
+       (click)="closeExpandedResult()">
+    <section class="result-modal" role="dialog" aria-modal="true" tabindex="-1"
+             [attr.aria-label]="'Expanded result for ' + result.scenario_id"
+             (click)="$event.stopPropagation()">
+      <header class="result-modal-header">
+        <div class="result-modal-title">
+          <span class="result-icon">{{ result.result === 'PASSED' ? '✅' : '❌' }}</span>
+          <div>
+            <div class="scenario-id">{{ result.scenario_id }}</div>
+            <div class="result-status">{{ result.result }}</div>
+          </div>
+        </div>
+        <button class="result-expand-btn" type="button" aria-label="Close expanded result"
+                title="Close" autofocus (click)="closeExpandedResult()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+
+      <div class="result-modal-content">
+        <section class="result-summary" *ngIf="result.summary">
+          <strong class="ai-summary-label"><span aria-hidden="true">&#10024;</span> AI-generated summary</strong>
+          <p>{{ result.summary }}</p>
+        </section>
+        <section class="result-details" *ngIf="result.observation">
+          <strong class="detail-label">📝 Observation</strong>
+          <p class="detail-value">{{ result.observation }}</p>
+        </section>
+      </div>
+
+      <footer class="result-modal-actions">
+        <button class="btn-small" type="button"
+                (click)="closeExpandedResult(); viewScenarioLogs(result.scenario_id)">
+          📋 View Logs
+        </button>
+        <button class="btn-small btn-retry" type="button" *ngIf="!isExecuting"
+                (click)="closeExpandedResult(); executeScenario(result.scenario_id)">
+          🔄 Re-run
+        </button>
+      </footer>
+    </section>
   </div>
 
   <!-- Footer Actions -->

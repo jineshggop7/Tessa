@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -32,6 +32,7 @@ export class LiveMonitorComponent implements OnInit, OnDestroy, AfterViewChecked
   selectedScenarioForLogs: string | null = null;
   editingScenarioId: string | null = null;
   editedSteps: { [scenarioId: string]: any[] } = {};
+  expandedResult: ExecutionResult | null = null;
   
   private subscriptions: Subscription[] = [];
   private shouldScrollToBottom = false;
@@ -341,6 +342,19 @@ export class LiveMonitorComponent implements OnInit, OnDestroy, AfterViewChecked
   viewScenarioLogs(scenarioId: string) {
     this.selectedScenarioForLogs = scenarioId;
     this.activeTab = 'logs';
+  }
+
+  openExpandedResult(result: ExecutionResult) {
+    this.expandedResult = result;
+  }
+
+  closeExpandedResult() {
+    this.expandedResult = null;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.closeExpandedResult();
   }
 
   // Step editing methods

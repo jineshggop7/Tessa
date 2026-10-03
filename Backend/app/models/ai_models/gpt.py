@@ -26,7 +26,7 @@ class GPTModel(BaseAIModel):
                     {"role": "user", "content": prompt}
                 ],
                 temperature=kwargs.get("temperature", 0.7),
-                max_tokens=kwargs.get("max_tokens", 4000)
+                max_tokens=kwargs.get("max_tokens", 8192)
             )
             logger.info(f"GPT response generated successfully")
             return response.choices[0].message.content
@@ -61,10 +61,11 @@ class GPTModel(BaseAIModel):
                 model=self.model_name,
                 messages=messages,
                 temperature=kwargs.get("temperature", 0.7),
-                max_tokens=kwargs.get("max_tokens", 4000)
+                max_tokens=kwargs.get("max_tokens", 8192)
             )
-            logger.info(f"GPT image response generated successfully")
-            return response.choices[0].message.content
+            choice = response.choices[0]
+            logger.info("GPT image response generated; finish reason: %s", choice.finish_reason)
+            return choice.message.content
         except Exception as e:
             logger.error(f"GPT image generation error: {str(e)}")
             raise Exception(f"GPT image generation error: {str(e)}")

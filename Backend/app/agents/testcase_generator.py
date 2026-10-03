@@ -37,7 +37,8 @@ Application Details:
 - Platform: {app_platform}
 - Description: {app_description or 'Not provided'}
 
-{f'Additional Instructions: {custom_prompt}' if custom_prompt else ''}
+User's custom instructions for scenario coverage and ordering:
+{custom_prompt or 'No additional instructions provided.'}
 
 Based on the screenshots, generate detailed test scenarios in JSON format. Each scenario should include:
 1. scenario_id: Unique identifier
@@ -45,6 +46,11 @@ Based on the screenshots, generate detailed test scenarios in JSON format. Each 
 3. description: What the scenario tests
 4. priority: high, medium, or low
 5. test_steps: List of detailed steps with actions and expected results
+
+Use the custom instructions to decide which flows to cover and how to prioritize them. Keep the required JSON structure and output limits below.
+
+Output limits:
+- Keep descriptions, actions, and expected results brief, and ensure the JSON array is complete.
 
 Return ONLY valid JSON array of scenarios, no additional text.
 
@@ -96,6 +102,8 @@ Example format:
             
         except json.JSONDecodeError as e:
             logger.error(f"[{self.execution_id}] JSON decode error: {str(e)}")
+            error_context = response_text[max(0, e.pos - 80):e.pos + 80]
+            logger.debug(f"[{self.execution_id}] Invalid JSON near character {e.pos}: {error_context!r}")
             logger.warning(f"[{self.execution_id}] Returning fallback scenario")
             # Fallback: return basic scenario
             return [{

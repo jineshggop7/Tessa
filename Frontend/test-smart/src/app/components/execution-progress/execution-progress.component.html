@@ -143,7 +143,10 @@
             <strong>Result: </strong>
             <span [class]="'result-badge result-' + result.result.toLowerCase()">{{ result.result }}</span>
           </div>
-          <div class="result-summary">{{ result.summary }}</div>
+          <div class="result-summary">
+            <strong class="ai-summary-label"><span aria-hidden="true">&#10024;</span> AI-generated summary</strong>
+            <p>{{ result.summary }}</p>
+          </div>
           <div class="result-observation" *ngIf="result.observation">
             <strong>Observation:</strong> {{ result.observation }}
           </div>

@@ -217,6 +217,33 @@
   margin: 0;
   line-height: 1.6;
   color: var(--gh-fg-default);
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
+.result-summary {
+  max-height: 140px;
+  overflow-y: auto;
+  padding: var(--gh-space-3);
+  border-left: 3px solid var(--gh-accent-fg);
+  border-radius: var(--gh-radius-small);
+  background: var(--gh-accent-subtle);
+  overflow-wrap: anywhere;
+}
+
+.ai-summary-label {
+  display: flex;
+  align-items: center;
+  gap: var(--gh-space-2);
+  margin-bottom: var(--gh-space-2);
+  color: var(--gh-accent-fg);
+  font-size: 0.85rem;
+}
+
+.result-summary p {
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .testcases-table-section {
