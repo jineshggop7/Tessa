@@ -1,6 +1,8 @@
 # Tessa AI Test Automation (TESSA - Testing End-to-End Smart Software Automation)
 
-Tessa is an AI-powered end-to-end test automation platform that automatically generates, writes, and executes test scripts based on screenshots and application configurations, providing real-time log feedback and a context-aware chatbot assistant.
+Tessa is an AI-driven test automation platform that helps teams generate, review, execute, and monitor end-to-end software tests from a single dashboard. It combines image-based scenario generation, Selenium script creation, live execution monitoring, AI-powered summaries, and code-editing assistance, so users can move from requirements to validated automation without manually stitching together multiple tools.
+
+The project includes a FastAPI backend for orchestration, MongoDB-backed execution tracking, script and screenshot storage, and an Angular frontend for launching executions, viewing live progress, inspecting results, and editing generated Python scripts with Tessa’s guidance. It is designed for practical QA automation workflows where users can inspect generated scripts, ask questions, fix logic, rerun saved scripts, and review step-by-step screenshots captured during execution..
 
 ---
 
