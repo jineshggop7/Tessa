@@ -326,6 +326,10 @@
           </div>
 
           <div class="result-actions">
+            <button class="btn-small" type="button" (click)="openStepScreenshots(result.scenario_id)"
+                    [attr.aria-label]="'View step screenshots for ' + result.scenario_id">
+              📸 Step Screenshots
+            </button>
             <button class="btn-small" (click)="viewScenarioLogs(result.scenario_id)">
               📋 View Logs
             </button>
@@ -386,6 +390,37 @@
           🔄 Re-run
         </button>
       </footer>
+    </section>
+  </div>
+
+  <div class="step-screenshot-backdrop" *ngIf="screenshotScenarioId as scenarioId"
+       (click)="closeStepScreenshots()">
+    <section class="step-screenshot-dialog" role="dialog" aria-modal="true"
+             [attr.aria-label]="'Step screenshots for ' + scenarioId"
+             (click)="$event.stopPropagation()">
+      <header class="step-screenshot-header">
+        <div>
+          <h2>Step Screenshots</h2>
+          <span>{{ scenarioId }}</span>
+        </div>
+        <button class="result-expand-btn" type="button" aria-label="Close screenshots"
+                (click)="closeStepScreenshots()">&times;</button>
+      </header>
+      <div class="step-screenshot-content">
+        <p class="screenshot-status" *ngIf="screenshotsLoading">Loading screenshots...</p>
+        <p class="screenshot-status error" *ngIf="screenshotsError">{{ screenshotsError }}</p>
+        <p class="screenshot-status" *ngIf="!screenshotsLoading && !screenshotsError && !stepScreenshots.length">
+          No screenshots were captured for this run. Rerun the scenario to capture its browser interactions.
+        </p>
+        <div class="screenshot-grid" *ngIf="stepScreenshots.length">
+          <figure class="step-screenshot" *ngFor="let screenshot of stepScreenshots">
+            <a [href]="getStepScreenshotUrl(screenshot.filename)" target="_blank" rel="noopener">
+              <img [src]="getStepScreenshotUrl(screenshot.filename)" [alt]="screenshot.label" loading="lazy">
+            </a>
+            <figcaption>{{ screenshot.label }}</figcaption>
+          </figure>
+        </div>
+      </div>
     </section>
   </div>
 

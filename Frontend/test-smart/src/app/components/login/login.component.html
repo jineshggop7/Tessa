@@ -32,8 +32,10 @@
             id="username"
             name="username"
             [(ngModel)]="username"
+            (ngModelChange)="saveCredentials()"
             class="form-input"
             placeholder="Enter your username"
+            autocomplete="username"
             required
             [disabled]="isLoading"
           />
@@ -46,12 +48,20 @@
             id="password"
             name="password"
             [(ngModel)]="password"
+            (ngModelChange)="saveCredentials()"
             class="form-input"
             placeholder="Enter your password"
+            autocomplete="current-password"
             required
             [disabled]="isLoading"
           />
         </div>
+
+        <label class="remember-credentials">
+          <input type="checkbox" [(ngModel)]="rememberCredentials" name="rememberCredentials"
+                 (ngModelChange)="saveCredentials()">
+          <span>Remember credentials in this tab session</span>
+        </label>
 
         <div class="error-message" *ngIf="errorMessage">
           <span class="error-icon">⚠️</span>

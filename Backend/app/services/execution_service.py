@@ -240,7 +240,7 @@ class ExecutionService:
                     "type": "scenario_progress",
                     "data": {
                         "stage": "code_generation",
-                        "message": f"Generating code for {scenario_name}",
+                        "message": f"Generating code for {scenario_name}; step screenshots will be captured during execution.",
                         "scenario_id": scenario_id,
                         "progress": f"{idx}/{len(selected_scenarios)}"
                     }
@@ -290,11 +290,13 @@ class ExecutionService:
                 })
                 
                 agent3 = ExecutorAgent(ai_model, execution_id)
+                screenshot_directory = self.storage.prepare_scenario_screenshots(execution_id, scenario_id)
                 result = await agent3.process(
                     script_path=script_path,
                     scenario=scenario,
                     ws_manager=self.ws_manager,
-                    execution_id=execution_id
+                    execution_id=execution_id,
+                    screenshot_directory=screenshot_directory
                 )
                 
                 result["scenario_id"] = scenario_id

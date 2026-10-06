@@ -1,0 +1,107 @@
+<main class="script-editor-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">AUTOMATION WORKSPACE</span>
+      <h1>Script Editor</h1>
+      <p>Review, refine, and rerun generated automation scripts.</p>
+    </div>
+    <label class="execution-picker">
+      <span>Execution</span>
+      <select [ngModel]="executionId" (ngModelChange)="selectExecution($event)" [disabled]="!executions.length">
+        <option *ngFor="let execution of executions" [value]="execution.execution_id">
+          {{ execution.app_name }} · {{ execution.execution_id | slice:0:8 }}
+        </option>
+      </select>
+    </label>
+  </header>
+
+  <section class="toolbar" *ngIf="executionId">
+    <div class="scenario-picker">
+      <span class="app-name">{{ appName }}</span>
+      <label for="scenario-select">Script</label>
+      <select id="scenario-select" [ngModel]="selectedScenarioId" (ngModelChange)="selectScript($event)"
+              [disabled]="!scripts.length">
+        <option *ngFor="let script of scripts" [value]="script.scenario_id">
+          {{ script.scenario_id }} · {{ script.scenario_name }}
+        </option>
+      </select>
+    </div>
+    <div class="toolbar-actions">
+      <span class="save-state" [class.dirty]="hasUnsavedChanges">
+        {{ hasUnsavedChanges ? 'Unsaved changes' : 'Saved' }}
+      </span>
+      <button type="button" class="button secondary" (click)="saveScript()"
+              [disabled]="!hasUnsavedChanges || saving || !selectedScript">
+        {{ saving ? 'Saving...' : 'Save script' }}
+      </button>
+      <button type="button" class="button primary" (click)="runScript()"
+              [disabled]="hasUnsavedChanges || running || !selectedScript">
+        {{ running ? 'Running...' : '▶ Run saved script' }}
+      </button>
+    </div>
+  </section>
+
+  <div class="notice error" *ngIf="error" role="alert">{{ error }}</div>
+  <div class="notice success" *ngIf="notice && !error" role="status">{{ notice }}</div>
+  <div class="loading" *ngIf="loading">Loading scripts...</div>
+
+  <section class="workspace" *ngIf="selectedScript && !loading">
+    <section class="editor-panel">
+      <header class="panel-header">
+        <div>
+          <h2>{{ selectedScript.scenario_name }}</h2>
+          <span>{{ selectedScript.scenario_id }}.py</span>
+        </div>
+        <span class="language">Python</span>
+      </header>
+      <textarea class="code-input" [(ngModel)]="code" spellcheck="false" autocapitalize="off"
+                autocomplete="off" autocorrect="off" aria-label="Python automation script"></textarea>
+      <section class="run-result" *ngIf="result" [class.failed]="result.result !== 'PASSED'">
+        <strong>{{ result.result }}</strong>
+        <p>{{ result.summary }}</p>
+        <details *ngIf="result.execution_details?.stderr">
+          <summary>Execution output</summary>
+          <pre>{{ result.execution_details.stderr }}</pre>
+        </details>
+      </section>
+    </section>
+
+    <aside class="assistant-panel">
+      <header class="assistant-header">
+        <span class="assistant-icon" aria-hidden="true">✦</span>
+        <div><h2>Tessa Code Assistant</h2><p>Ask a question or request a code change</p></div>
+      </header>
+      <div class="chat-thread" aria-live="polite">
+        <div class="chat-message assistant-message">
+          <span aria-hidden="true">✦</span>
+          <p>Ask me to explain the script, discuss a failure, or suggest an improvement. For requested edits, I’ll show a proposal before changing your draft.</p>
+        </div>
+        <div *ngFor="let message of messages" class="chat-message" [class.user-message]="message.role === 'user'">
+          <span aria-hidden="true">{{ message.role === 'user' ? 'You' : '✦' }}</span><p>{{ message.content }}</p>
+        </div>
+        <div class="chat-message assistant-message" *ngIf="editing"><span>✦</span><p>Tessa is thinking...</p></div>
+      </div>
+
+      <section class="proposal" *ngIf="proposedCode">
+        <div class="proposal-heading"><strong>Proposed code edit</strong><span>Review before applying</span></div>
+        <pre>{{ proposedCode }}</pre>
+        <button type="button" class="button primary" (click)="applyProposal()">Apply proposal</button>
+      </section>
+
+      <form class="composer" (ngSubmit)="askTessa()">
+        <label for="instruction">Message Tessa</label>
+        <textarea id="instruction" name="instruction" [(ngModel)]="instruction"
+                  placeholder="Ask a question or request a script edit"
+                  [disabled]="editing || !selectedScript"></textarea>
+        <button type="submit" class="button primary" [disabled]="!instruction.trim() || editing || !selectedScript">
+          {{ editing ? 'Thinking...' : 'Send to Tessa' }}
+        </button>
+      </form>
+    </aside>
+  </section>
+
+  <section class="empty-state" *ngIf="!loading && !selectedScript && !error">
+    <h2>Select an execution with generated scripts</h2>
+    <p>Run a scenario first to create a Python script for editing.</p>
+  </section>
+</main>

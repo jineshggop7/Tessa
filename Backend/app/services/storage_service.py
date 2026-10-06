@@ -16,12 +16,14 @@ class StorageService:
         self.base_path = settings.STORAGE_BASE_PATH
         self.images_path = settings.IMAGES_PATH
         self.scripts_path = settings.SCRIPTS_PATH
+        self.screenshots_path = os.path.join(self.base_path, "screenshots")
         self._ensure_directories()
     
     def _ensure_directories(self):
         """Ensure storage directories exist"""
         os.makedirs(self.images_path, exist_ok=True)
         os.makedirs(self.scripts_path, exist_ok=True)
+        os.makedirs(self.screenshots_path, exist_ok=True)
     
     def create_execution_directory(self, execution_id: str) -> tuple[str, str]:
         """Create directories for a specific execution"""
@@ -156,6 +158,18 @@ class StorageService:
     def get_script_path(self, execution_id: str, scenario_id: str) -> str:
         """Get path to a specific script"""
         return os.path.join(self.scripts_path, execution_id, f"{scenario_id}.py")
+
+    def prepare_scenario_screenshots(self, execution_id: str, scenario_id: str) -> str:
+        """Create a clean screenshot folder for one scenario execution."""
+        screenshot_dir = os.path.join(self.screenshots_path, execution_id, scenario_id)
+        os.makedirs(screenshot_dir, exist_ok=True)
+        for filename in os.listdir(screenshot_dir):
+            if filename.lower().endswith(".png"):
+                os.remove(os.path.join(screenshot_dir, filename))
+        return screenshot_dir
+
+    def get_scenario_screenshots_path(self, execution_id: str, scenario_id: str) -> str:
+        return os.path.join(self.screenshots_path, execution_id, scenario_id)
     
     def get_execution_images(self, execution_id: str) -> List[str]:
         """Get all images for an execution"""

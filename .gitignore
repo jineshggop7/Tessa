@@ -17,6 +17,7 @@ Backend/test.log
 Backend/test_log.log
 Backend/test_log.txt
 Backend/yt_test.log
+Backend/storage
 
 # Node dependencies and build artifacts
 **/node_modules/

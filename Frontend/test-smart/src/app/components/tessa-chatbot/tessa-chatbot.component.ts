@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, AskTessaRequest } from '../../services/api.service';
@@ -19,6 +19,8 @@ interface ChatMessage {
   styleUrl: './tessa-chatbot.component.scss'
 })
 export class TessaChatbotComponent implements OnInit {
+  @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
+
   messages: ChatMessage[] = [];
   currentMessage: string = '';
   isLoading: boolean = false;
@@ -42,6 +44,7 @@ export class TessaChatbotComponent implements OnInit {
           ...msg,
           timestamp: new Date(msg.timestamp)
         }));
+        this.scrollToBottom();
       }
 
       const savedAiModel = localStorage.getItem('tessa_ai_model');
@@ -222,15 +225,13 @@ export class TessaChatbotComponent implements OnInit {
   }
 
   private scrollToBottom() {
-    setTimeout(() => {
-      const container = document.querySelector('.chat-messages');
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    requestAnimationFrame(() => {
+      const container = this.messagesContainer?.nativeElement;
       if (container) {
-        // Smooth scroll for better UX during typing
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: 'smooth'
-        });
+        container.scrollTop = container.scrollHeight;
       }
-    }, 10); // Reduced delay for more responsive scrolling during typing
+    });
   }
 }

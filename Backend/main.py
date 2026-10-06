@@ -5,7 +5,7 @@ import logging
 import sys
 from app.config import settings
 from app.database.mongodb import connect_to_mongo, close_mongo_connection
-from app.api.routes import execution, tessa, websocket
+from app.api.routes import execution, scripts, tessa, websocket
 
 # Configure logging
 logging.basicConfig(
@@ -51,6 +51,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(execution.router)
+app.include_router(scripts.router)
 app.include_router(tessa.router)
 app.include_router(websocket.router)
 

@@ -21,7 +21,8 @@ class ExecutorAgent(BaseAgent):
         script_path: str,
         scenario: Dict[str, Any],
         ws_manager = None,
-        execution_id: str = None
+        execution_id: str = None,
+        screenshot_directory: str = None
     ) -> Dict[str, Any]:
         """
         Execute test script and generate AI summary
@@ -39,7 +40,8 @@ class ExecutorAgent(BaseAgent):
             script_path, 
             scenario_id, 
             ws_manager, 
-            execution_id or self.execution_id
+            execution_id or self.execution_id,
+            screenshot_directory
         )
         
         # Generate AI summary
@@ -56,18 +58,66 @@ class ExecutorAgent(BaseAgent):
         script_path: str, 
         scenario_id: str,
         ws_manager,
-        execution_id: str
+        execution_id: str,
+        screenshot_directory: str = None
     ) -> Dict[str, Any]:
         """Execute script and stream output in real-time"""
         try:
             logger.info(f"[{execution_id}] Starting async script execution with streaming: {script_path}")
             
             # Use asyncio subprocess for non-blocking execution
+            env = os.environ.copy()
+            env["TESSA_SCREENSHOT_DIR"] = screenshot_directory or ""
+            runner = r'''import os
+import runpy
+import sys
+
+from selenium.webdriver.remote.webdriver import WebDriver
+
+screenshot_dir = sys.argv[1]
+script_path = sys.argv[2]
+os.makedirs(screenshot_dir, exist_ok=True)
+original_execute = WebDriver.execute
+action_commands = {
+    "get": "navigate",
+    "clickElement": "click",
+    "sendKeysToElement": "type",
+    "clearElement": "clear",
+    "submitElement": "submit",
+}
+capture_index = 0
+
+def execute_with_step_screenshot(self, command, params=None):
+    global capture_index
+    try:
+        return original_execute(self, command, params)
+    finally:
+        action = action_commands.get(command)
+        if action and screenshot_dir:
+            capture_index += 1
+            screenshot_path = os.path.join(
+                screenshot_dir,
+                "action_{:03d}_{}.png".format(capture_index, action),
+            )
+            try:
+                self.get_screenshot_as_file(screenshot_path)
+                print("[TESSA_SCREENSHOT] {}".format(os.path.basename(screenshot_path)), flush=True)
+            except Exception as screenshot_error:
+                print("[TESSA_SCREENSHOT_ERROR] {}".format(screenshot_error), flush=True)
+
+WebDriver.execute = execute_with_step_screenshot
+sys.argv = [script_path]
+runpy.run_path(script_path, run_name="__main__")
+'''
             process = await asyncio.create_subprocess_exec(
                 sys.executable,
+                "-c",
+                runner,
+                screenshot_directory or "",
                 script_path,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                env=env,
             )
             
             stdout_lines = []

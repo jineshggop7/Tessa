@@ -191,13 +191,17 @@ RESPONSE ({response_format}):"""
             for result in results:
                 s_id = result.get('scenario_id', 'Unknown')
                 res = result.get('result', 'Unknown')
-                summary = result.get('summary', 'No summary')
-                obs = result.get('observation', '')
+                summary = self._format_context_value(result.get('summary')) or 'No summary'
+                observation = self._format_context_value(result.get('observation'))
+                details = result.get('execution_details') or {}
+                stderr = self._format_context_value(details.get('stderr')) if isinstance(details, dict) else ''
                 
                 prompt_parts.append(f"  {s_id}: {res}")
                 prompt_parts.append(f"    Summary: {summary}")
-                if obs:
-                    prompt_parts.append(f"    Details: {obs[:150]}")
+                if observation:
+                    prompt_parts.append(f"    Details: {observation[:500]}")
+                if stderr:
+                    prompt_parts.append(f"    Execution error output: {stderr[:1000]}")
         
         # Overall summary
         if "overall_result" in context and context["overall_result"]:
@@ -207,3 +211,19 @@ RESPONSE ({response_format}):"""
             prompt_parts.append("No test data available yet")
         
         return "\n".join(prompt_parts)
+
+    def _format_context_value(self, value: Any) -> str:
+        """Convert database values into readable text before placing them in the prompt."""
+        if value is None:
+            return ''
+        if isinstance(value, str):
+            return value.strip()
+        if isinstance(value, dict):
+            return '\n'.join(
+                f"{key}: {self._format_context_value(item)}"
+                for key, item in value.items()
+                if item is not None
+            )
+        if isinstance(value, (list, tuple)):
+            return '\n'.join(self._format_context_value(item) for item in value if item is not None)
+        return str(value)

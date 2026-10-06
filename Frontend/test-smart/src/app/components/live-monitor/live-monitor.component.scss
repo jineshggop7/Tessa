@@ -814,6 +814,7 @@
 
   .result-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     padding-top: 12px;
     border-top: 1px solid var(--gh-border-default);
@@ -953,6 +954,100 @@
 .result-modal-actions {
   justify-content: flex-start;
   border-top: 1px solid var(--gh-border-default);
+}
+
+.step-screenshot-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1010;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 65%);
+}
+
+.step-screenshot-dialog {
+  display: flex;
+  width: min(1100px, calc(100vw - 32px));
+  max-height: min(90vh, 900px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--gh-border-default);
+  border-radius: 8px;
+  background: var(--gh-canvas-elevated);
+  box-shadow: var(--gh-shadow-large);
+}
+
+.step-screenshot-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--gh-border-default);
+
+  h2 {
+    margin: 0 0 3px;
+    color: var(--gh-fg-default);
+    font-size: 17px;
+  }
+
+  span {
+    color: var(--gh-fg-muted);
+    font-family: var(--gh-font-mono);
+    font-size: 12px;
+  }
+}
+
+.step-screenshot-content {
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.screenshot-status {
+  margin: 10px 0;
+  color: var(--gh-fg-muted);
+  text-align: center;
+
+  &.error {
+    color: var(--gh-danger-fg);
+  }
+}
+
+.screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 14px;
+}
+
+.step-screenshot {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--gh-border-default);
+  border-radius: 6px;
+  background: var(--gh-canvas-subtle);
+
+  a {
+    display: block;
+    background: var(--gh-canvas-inset);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+  }
+
+  figcaption {
+    padding: 8px 10px;
+    color: var(--gh-fg-muted);
+    font-family: var(--gh-font-mono);
+    font-size: 11px;
+    text-transform: capitalize;
+  }
 }
 
 // Empty States

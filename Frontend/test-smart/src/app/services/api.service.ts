@@ -110,6 +110,35 @@ export interface ExecutionResult {
   };
 }
 
+export interface ExecutionScript {
+  scenario_id: string;
+  scenario_name: string;
+  code: string;
+}
+
+export interface ExecutionScriptsResponse {
+  execution_id: string;
+  app_name: string;
+  ai_model: string;
+  scripts: ExecutionScript[];
+}
+
+export interface ScriptExecutionResponse {
+  result: ExecutionResult;
+  overall_result: string;
+}
+
+export interface StepScreenshot {
+  filename: string;
+  label: string;
+}
+
+export interface ScriptAssistantResponse {
+  intent: 'answer' | 'edit';
+  message: string;
+  code?: string;
+}
+
 export interface WebSocketMessage {
   type: string;
   execution_id: string;
@@ -214,6 +243,50 @@ export class ApiService {
       `${this.baseUrl}/api/execute-scenarios`,
       data
     );
+  }
+
+  getExecutionScripts(executionId: string): Observable<ExecutionScriptsResponse> {
+    return this.http.get<ExecutionScriptsResponse>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scripts`
+    );
+  }
+
+  saveExecutionScript(executionId: string, scenarioId: string, code: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scripts/${encodeURIComponent(scenarioId)}`,
+      { code }
+    );
+  }
+
+  aiEditExecutionScript(executionId: string, scenarioId: string, code: string, instruction: string): Observable<{ code: string }> {
+    return this.http.post<{ code: string }>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scripts/${encodeURIComponent(scenarioId)}/ai-edit`,
+      { code, instruction }
+    );
+  }
+
+  askScriptAssistant(executionId: string, scenarioId: string, code: string, message: string): Observable<ScriptAssistantResponse> {
+    return this.http.post<ScriptAssistantResponse>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scripts/${encodeURIComponent(scenarioId)}/assistant`,
+      { code, message }
+    );
+  }
+
+  executeSavedScript(executionId: string, scenarioId: string): Observable<ScriptExecutionResponse> {
+    return this.http.post<ScriptExecutionResponse>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scripts/${encodeURIComponent(scenarioId)}/execute`,
+      {}
+    );
+  }
+
+  getScenarioScreenshots(executionId: string, scenarioId: string): Observable<{ screenshots: StepScreenshot[] }> {
+    return this.http.get<{ screenshots: StepScreenshot[] }>(
+      `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scenarios/${encodeURIComponent(scenarioId)}/screenshots`
+    );
+  }
+
+  getScenarioScreenshotUrl(executionId: string, scenarioId: string, filename: string): string {
+    return `${this.baseUrl}/api/executions/${encodeURIComponent(executionId)}/scenarios/${encodeURIComponent(scenarioId)}/screenshots/${encodeURIComponent(filename)}`;
   }
 
   // WebSocket Connection

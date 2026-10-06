@@ -17,7 +17,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   lockoutMessage: string = '';
   isLoading: boolean = false;
+  rememberCredentials = true;
   private lockoutTimerId?: number;
+  private readonly USERNAME_KEY = 'tessa_login_username';
+  private readonly PASSWORD_KEY = 'tessa_login_password';
 
   leftMessages = [
     'TESSA - TESSA - Testing End-to-End Smart Software Automation',
@@ -44,7 +47,25 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.loadCredentials();
     this.startTypingAnimation();
+  }
+
+  saveCredentials() {
+    if (typeof window === 'undefined') return;
+    if (this.rememberCredentials) {
+      localStorage.setItem(this.USERNAME_KEY, this.username);
+      sessionStorage.setItem(this.PASSWORD_KEY, this.password);
+    } else {
+      localStorage.removeItem(this.USERNAME_KEY);
+      sessionStorage.removeItem(this.PASSWORD_KEY);
+    }
+  }
+
+  private loadCredentials() {
+    if (typeof window === 'undefined') return;
+    this.username = localStorage.getItem(this.USERNAME_KEY) || '';
+    this.password = sessionStorage.getItem(this.PASSWORD_KEY) || '';
   }
 
   async startTypingAnimation() {
@@ -103,6 +124,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const result = await this.authService.login(this.username, this.password);
 
     if (result.success) {
+      this.saveCredentials();
       this.clearLockoutTimer();
       this.router.navigate(['/home']);
       return;

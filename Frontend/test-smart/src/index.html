@@ -177,17 +177,5 @@
     </div>
   </div>
   <app-root></app-root>
-  <script>
-    // Hide spinner when Angular app is loaded (minimum 6 seconds)
-    window.addEventListener('DOMContentLoaded', () => {
-      const spinner = document.getElementById('nb-global-spinner');
-      // Wait for Angular to bootstrap with minimum 6 second display
-      setTimeout(() => {
-        if (spinner) {
-          spinner.classList.add('loaded');
-        }
-      }, 6000);
-    });
-  </script>
 </body>
 </html>

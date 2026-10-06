@@ -30,12 +30,9 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
-    // Hide the loading spinner once Angular app is initialized (minimum 6 seconds)
     const spinner = document.getElementById('nb-global-spinner');
     if (spinner) {
-      setTimeout(() => {
-        spinner.classList.add('loaded');
-      }, 6000);
+      spinner.classList.add('loaded');
     }
   }
 

@@ -8,6 +8,7 @@ import { LiveMonitorComponent } from './components/live-monitor/live-monitor.com
 import { ReportComponent } from './components/report/report.component';
 import { TessaChatbotComponent } from './components/tessa-chatbot/tessa-chatbot.component';
 import { AnalyticsDashboardComponent } from './components/analytics-dashboard/analytics-dashboard.component';
+import { ScriptEditorComponent } from './components/script-editor/script-editor.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -20,5 +21,7 @@ export const routes: Routes = [
   { path: 'monitor/:id', component: LiveMonitorComponent, canActivate: [authGuard] },
   { path: 'report/:id', component: ReportComponent, canActivate: [authGuard] },
   { path: 'tessa', component: TessaChatbotComponent, canActivate: [authGuard] },
+  { path: 'scripts', component: ScriptEditorComponent, canActivate: [authGuard] },
+  { path: 'scripts/:id', component: ScriptEditorComponent, canActivate: [authGuard] },
   { path: 'analytics', component: AnalyticsDashboardComponent, canActivate: [authGuard] }
 ];

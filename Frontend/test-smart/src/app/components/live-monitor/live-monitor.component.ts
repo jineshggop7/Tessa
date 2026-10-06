@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ApiService, ExecutionHistoryItem, TestScenario, ExecutionResult } from '../../services/api.service';
+import { ApiService, ExecutionHistoryItem, TestScenario, ExecutionResult, StepScreenshot } from '../../services/api.service';
 import { ExecutionStateService } from '../../services/execution-state.service';
 
 @Component({
@@ -33,6 +33,10 @@ export class LiveMonitorComponent implements OnInit, OnDestroy, AfterViewChecked
   editingScenarioId: string | null = null;
   editedSteps: { [scenarioId: string]: any[] } = {};
   expandedResult: ExecutionResult | null = null;
+  screenshotScenarioId: string | null = null;
+  stepScreenshots: StepScreenshot[] = [];
+  screenshotsLoading = false;
+  screenshotsError = '';
   
   private subscriptions: Subscription[] = [];
   private shouldScrollToBottom = false;
@@ -350,6 +354,37 @@ export class LiveMonitorComponent implements OnInit, OnDestroy, AfterViewChecked
 
   closeExpandedResult() {
     this.expandedResult = null;
+  }
+
+  openStepScreenshots(scenarioId: string) {
+    this.screenshotScenarioId = scenarioId;
+    this.stepScreenshots = [];
+    this.screenshotsError = '';
+    this.screenshotsLoading = true;
+    this.apiService.getScenarioScreenshots(this.executionId, scenarioId).subscribe({
+      next: response => {
+        this.stepScreenshots = response.screenshots || [];
+        this.screenshotsLoading = false;
+      },
+      error: error => {
+        this.screenshotsError = error.error?.detail || 'Could not load step screenshots.';
+        this.screenshotsLoading = false;
+      }
+    });
+  }
+
+  closeStepScreenshots() {
+    this.screenshotScenarioId = null;
+    this.stepScreenshots = [];
+    this.screenshotsError = '';
+  }
+
+  getStepScreenshotUrl(filename: string): string {
+    return this.apiService.getScenarioScreenshotUrl(
+      this.executionId,
+      this.screenshotScenarioId || '',
+      filename
+    );
   }
 
   @HostListener('document:keydown.escape')

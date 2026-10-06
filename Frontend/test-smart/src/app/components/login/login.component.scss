@@ -220,6 +220,22 @@
   cursor: not-allowed;
 }
 
+.remember-credentials {
+  display: flex;
+  align-items: center;
+  gap: var(--gh-space-2);
+  color: var(--gh-fg-muted);
+  font-size: 13px;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--gh-accent-fg);
+  }
+}
+
 .error-message {
   display: flex;
   align-items: center;

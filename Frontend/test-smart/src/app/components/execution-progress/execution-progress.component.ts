@@ -141,7 +141,7 @@ export class ExecutionProgressComponent implements OnInit, OnDestroy {
       'running': 'Execution is in progress',
       'testcase_generation': 'AI Agent 1 is analyzing requirements and generating test scenarios',
       'scenarios_ready': 'Test scenarios have been generated. Please select which ones to execute.',
-      'code_generation': 'AI Agent 2 is creating Python automation scripts',
+      'code_generation': 'AI Agent 2 is creating Python automation scripts; step screenshots will be captured during execution',
       'executing': 'AI Agent 3 is running automated tests',
       'execution': 'AI Agent 3 is running automated tests',
       'completed': 'All tests have been executed successfully',
