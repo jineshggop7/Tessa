@@ -1,4 +1,4 @@
-# Tessa AI Test Automation (TestSmart)
+# Tessa AI Test Automation (TESSA - Testing End-to-End Smart Software Automation)
 
 Tessa is an AI-powered end-to-end test automation platform that automatically generates, writes, and executes test scripts based on screenshots and application configurations, providing real-time log feedback and a context-aware chatbot assistant.
 
